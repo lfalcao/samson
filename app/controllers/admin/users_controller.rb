@@ -37,7 +37,6 @@ class Admin::UsersController < ApplicationController
   end
 
   def user_params
-    # also reset pending access request, so the user can request further access rights
-    params.require(:user).permit(:role_id).merge(access_request_pending: false)
+    params.require(:user).permit(:role_id)
   end
 end

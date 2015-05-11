@@ -214,7 +214,7 @@ describe MacrosController do
     describe 'a POST to #execute' do
       describe 'with a macro' do
         setup do
-          JobExecution.stubs(:start_job)
+          JobExecution.stubs(:start_job).with(macro.reference, job)
           post :execute, project_id: project.to_param, id: macro.id
         end
 

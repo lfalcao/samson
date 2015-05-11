@@ -4,6 +4,6 @@ module JobsHelper
   end
 
   def job_active?
-    @job.active? && (JobExecution.active?(@job.id) || (JobExecution.queued?(@job.id) && JobExecution.enabled))
+    @job.active? && (JobExecution.find_by_id(@job.id) || JobExecution.enabled)
   end
 end

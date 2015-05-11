@@ -1,15 +1,12 @@
 class ProjectRolesController < ApplicationController
-  include CurrentProject
   include ProjectLevelAuthorization
 
-  before_action only: [:create, :update] do
-    find_project(params[:project_id])
-  end
+  skip_before_action :require_project, only: [:index]
 
   before_action :authorize_project_admin!, only: [:create, :update]
 
   def index
-    render json: ProjectRole.all, root: false
+    render json: ProjectRole.all.map { |role| {id: role.id, display_name: role.display_name} }, root: false
   end
 
   def create

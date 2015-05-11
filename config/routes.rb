@@ -95,9 +95,7 @@ Samson::Application.routes.draw do
     resource :projects, only: [:show]
     resources :commands, except: [:show]
     resources :environments, except: [:show]
-    resources :deploy_groups
-
-    get '/:action', to: 'admin#:action', :defaults => { :format => 'json' }
+    resources :deploy_groups, except: [:show]
   end
 
   namespace :integrations do
@@ -110,8 +108,6 @@ Samson::Application.routes.draw do
   end
 
   get '/ping', to: 'ping#show'
-
-  resources :access_requests, only: [:new, :create]
 
   get '/project_roles', to: 'project_roles#index'
 

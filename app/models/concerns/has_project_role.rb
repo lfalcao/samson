@@ -1,4 +1,5 @@
 module HasProjectRole
+  extend ActiveSupport::Concern
 
   def role
     ProjectRole.find(role_id)

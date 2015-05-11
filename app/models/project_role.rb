@@ -2,7 +2,6 @@ require 'active_hash'
 
 class ProjectRole < ActiveHash::Base
   include ActiveHash::Enum
-  include ActiveModel::Serializers::JSON
 
   self.data = [
     { id: 0, name: "deployer" },
@@ -13,9 +12,5 @@ class ProjectRole < ActiveHash::Base
 
   def display_name
     name.humanize
-  end
-
-  def as_json(options = {})
-    super((options || {}).merge(methods: :display_name))
   end
 end

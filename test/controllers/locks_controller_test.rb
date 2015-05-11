@@ -94,6 +94,37 @@ describe LocksController do
         assert_redirected_to '/back'
         assert flash[:notice]
 
+        stage.reload
+
+        stage.warning?.must_equal(false)
+        stage.locked?.must_equal(true)
+        stage.lock.description.must_equal 'DESC'
+      end
+
+      it 'creates a warning' do
+        post :create, lock: {stage_id: stage.id, description: 'DESC', warning: true}
+        assert_redirected_to '/back'
+        assert flash[:notice]
+
+        stage.reload
+
+        stage.warning?.must_equal(true)
+        stage.locked?.must_equal(false)
+        stage.lock.description.must_equal 'DESC'
+      end
+    end
+
+    describe 'DELETE to #destroy' do
+      it 'destroys the lock' do
+        lock = stage.create_lock!(user: users(:deployer))
+        delete :destroy, id: lock.id
+
+        assert_redirected_to '/back'
+        assert flash[:notice]
+
+        stage.reload
+
+        stage.locked?.must_equal(false)
         Lock.count.must_equal 0
       end
     end

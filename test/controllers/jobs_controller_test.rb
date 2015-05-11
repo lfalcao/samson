@@ -120,7 +120,7 @@ describe JobsController do
 
     describe "a POST to :create" do
       setup do
-        JobExecution.stubs(:start_job)
+        JobExecution.stubs(:start_job).with('master', job)
 
         post :create, commands: {ids: []}, job: {
             command: command,

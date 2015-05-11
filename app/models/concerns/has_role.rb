@@ -1,4 +1,5 @@
 module HasRole
+  extend ActiveSupport::Concern
 
   def role
     Role.find(role_id)
