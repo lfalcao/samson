@@ -3,10 +3,10 @@ module SamsonEnv
   end
 
   class << self
-    def write_env_files(dir, stage)
+    def write_env_files(dir, stage, output)
       return unless groups = env_groups(stage.project, stage.deploy_groups.to_a)
-      write_env_json_file("#{dir}/ENV.json", "#{dir}/manifest.json", groups) ||
-        write_dotenv_file("#{dir}/.env", groups)
+      write_env_json_file("#{dir}/ENV.json", "#{dir}/manifest.json", groups, output) ||
+        write_dotenv_file("#{dir}/.env", groups, output)
     end
 
     def env_groups(project, deploy_groups, preview: false)
@@ -26,18 +26,19 @@ module SamsonEnv
     private
 
     # writes .env file for each deploy group
-    def write_dotenv_file(base_file, groups)
+    def write_dotenv_file(base_file, groups, output)
       required_keys = parse_dotenv(base_file).keys if File.exist?(base_file)
       File.unlink(base_file) if File.exist?(base_file)
       groups.each do |suffix, data|
         generated_file = "#{base_file}#{suffix}"
         data = extract_keys(generated_file, required_keys, [], data) if required_keys
         File.write(generated_file, generate_dotenv(data))
+        output.write("# Creating environment #{generated_file} file\n")
       end
     end
 
     # writes a proprietary .json file with a env hash for each deploy group
-    def write_env_json_file(env_json, manifest_json, groups)
+    def write_env_json_file(env_json, manifest_json, groups, output)
       return unless File.exist?(manifest_json)
       json = if File.exist?(env_json)
         JSON.load(File.read(env_json)).tap { File.unlink(env_json) }
@@ -56,6 +57,7 @@ module SamsonEnv
       groups.each do |suffix, data|
         generated_file = env_json.sub(".json", "#{suffix}.json")
         data = extract_keys(generated_file, required_keys, optional_keys, data)
+        output.write("# Creating environment #{generated_file} file\n")
         File.write(generated_file, JSON.pretty_generate(json.merge("env" => data)))
       end
     end
@@ -89,6 +91,6 @@ Samson::Hooks.callback :project_permitted_params do
   AcceptsEnvironmentVariables::ASSIGNABLE_ATTRIBUTES.merge(environment_variable_group_ids: [])
 end
 
-Samson::Hooks.callback :after_deploy_setup do |dir, stage|
-  SamsonEnv.write_env_files(dir, stage)
+Samson::Hooks.callback :after_deploy_setup do |dir, stage, output|
+  SamsonEnv.write_env_files(dir, stage, output)
 end
