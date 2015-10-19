@@ -112,6 +112,20 @@ describe Project do
   describe 'project repository initialization' do
     let(:repository_url) { 'git@github.com:zendesk/demo_apps.git' }
 
+    it 'retrieves repository homepage and service name for github' do
+      project = Project.new(name: 'demo_apps', repository_url: repository_url)
+      project.repository_homepage.must_equal("//github.com/zendesk/demo_apps")
+      project.repository_service.must_equal("github")
+      project.save
+    end
+
+    it 'retrieves repository homepage and service name for bitbucket' do
+      project = Project.new(name: 'demo_apps', repository_url: "git@bitbucket.org:bitbucket/do_not_delete.git")
+      project.repository_homepage.must_equal("//bitbucket.org/bitbucket/do_not_delete")
+      project.repository_service.must_equal("bitbucket")
+      project.save
+    end
+
     it 'should not clean the project when the project is created' do
       project = Project.new(name: 'demo_apps', repository_url: repository_url)
       project.expects(:clean_old_repository).never

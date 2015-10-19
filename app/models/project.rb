@@ -86,7 +86,17 @@ class Project < ActiveRecord::Base
   end
 
   def repository_homepage
-    "//#{Rails.application.config.samson.github.web_url}/#{github_repo}"
+    repository_url.gsub(":", "/").gsub(".git", "").gsub("git@", "//")
+  end
+
+  def repository_service
+    if repository_url.include? "github"
+      "github"
+    elsif repository_url.include? "bitbucket"
+      "bitbucket"
+    else
+      "git"
+    end
   end
 
   def webhook_stages_for(branch, service_type, service_name)

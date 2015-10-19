@@ -1,0 +1,3 @@
+<%= link_to project.repository_homepage, class: "repository_service #{project.repository_service}", target: "_blank", title: "View repository" do %>
+	<%= content_tag :i, nil, class: "fa fa-#{project.repository_service}" %>
+<% end %>
